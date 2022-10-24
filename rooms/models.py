@@ -20,6 +20,10 @@ class Room(CommonModel):
             "Shared Room",
         )
 
+    name = models.CharField(
+        max_length=180,
+        default="",
+    )  # 이미 추가해둔 방이 있기 때문에 default="" 넣어줌
     country = models.CharField(
         max_length=50,
         default="한국",
@@ -50,14 +54,25 @@ class Room(CommonModel):
         "rooms.Amenity",
     )
 
-    class Amenity(models.Model):
+    def __str__(self):
+        return self.name
 
-        """Amenity Definition"""
 
-        name = models.CharField(
-            max_length=150,
-        )
-        description = models.CharField(
-            max_length=150,
-            default="",  # null=True 써도 관계없음
-        )
+class Amenity(CommonModel):
+
+    """Amenity Definition"""
+
+    name = models.CharField(
+        max_length=150,
+    )
+    description = models.CharField(
+        max_length=150,
+        default="",  # null=True 써도 관계없음: DB에서 null일 수 있다는 의미
+        blank=True,  # 장고 form에서 공백을 의미
+    )
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = "Amenities"

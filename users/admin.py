@@ -7,7 +7,7 @@ from .models import User
 
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
-    # user 관리자패널은 다른 앱의 관리자패널과 다른 기능이 필요하므로, houses 앱 때와는 달리 UserAdmin 클래스를 상속받아야 함
+    # user 관리자패널은 다른 앱의 관리자패널과 다른 기능이 필요하므로, 다른 앱들과는 달리 UserAdmin 클래스를 상속받아야 함
     # 튜플이나 딕셔너리 등의 끝에 콤마(,)를 붙이는 목적은 vscode가 튜플과 딕셔너리를 펼쳐서 보여주게 하기 위함임
     fieldsets = (
         (
