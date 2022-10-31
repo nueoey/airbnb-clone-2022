@@ -39,6 +39,8 @@ CUSTOM_APPS = [
     "reviews.apps.ReviewsConfig",
     "wishlists.apps.WishlistsConfig",
     "bookings.apps.BookingsConfig",
+    "medias.apps.MediasConfig",
+    "direct_messages.apps.DirectMessagesConfig",  # 마지막 부분을 어떻게 적어야하는지 모른다면, apps.py 파일을 보면 됨
 ]
 
 SYSTEM_APPS = [

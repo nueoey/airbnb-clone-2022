@@ -17,18 +17,21 @@ class Booking(CommonModel):
     user = models.ForeignKey(
         "users.User",
         on_delete=models.CASCADE,
+        related_name="bookings",
     )
     room = models.ForeignKey(
         "rooms.Room",
         null=True,  # Experience 예약일 경우에는 room은 빈칸이어야 하므로
         blank=True,
         on_delete=models.SET_NULL,
+        related_name="bookings",
     )
     experience = models.ForeignKey(
         "experiences.Experience",
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
+        related_name="bookings",
     )
     check_in = models.DateField(
         null=True,  # Experience 예약일 경우에는 room은 빈칸이어야 하므로
