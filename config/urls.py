@@ -13,9 +13,19 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
+# 유저가 해당 url로 접근했을 때 장고가 실행하는 함수들이 적혀있음
+
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from rooms import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-]
+    # path함수의 첫번째 argument는 주소, 두번째 argument는 그때 실행될 함수
+    path("admin/", admin.site.urls),
+    path(
+        "api/v1/rooms/", include("rooms.urls")
+    ),  # /rooms/ (뒤에 뭐가 붙든 모두)에 접근한다면 rooms앱의 urls.py를 찾아보라는 뜻
+    path("api/v1/categories/", include("categories.urls")),
+    path("api/v1/experiences/", include("experiences.urls")),
+]  # 이렇게 api/버전/앱이름 형식으로 주소를 만들어주는 것이 좋음

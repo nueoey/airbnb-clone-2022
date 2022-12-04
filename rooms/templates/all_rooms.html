@@ -1,0 +1,16 @@
+<!--템플릿은 반드시 templates 폴더 내에 만들어야 함!-->
+<h1>{{title}}</h1>
+
+<ul>
+  {% for room in rooms%}
+  <!--여기의 rooms는 rooms.views의 see_all_room()이 리턴하는 딕셔너리 내의 rooms-->
+  <li><a href="/rooms/{{room.pk}}">
+    {{room.name}}<br />
+    <!--br은 줄바꾸기-->
+    {% for amenity in room.amenities.all %}
+    <span>- {{amenity.name}}<br /></span>
+    {% endfor %}
+  </li>
+  {% endfor %}
+  <!--for문 닫아주기-->
+</ul>

@@ -46,8 +46,8 @@ class WordFilter(admin.SimpleListFilter):
         if word:
             return reviews.filter(payload__contains=word)
         else:
-            # 필터에서 아무것도 선택하지 않으면, 즉, url에 아무 단어가 없으면, 모든 리뷰를 반환
-            return reviews  
+            # 필터에서 아무것도 선택하지 않으면("모두" 선택), 즉, url에 아무 단어가 없으면, 모든 리뷰를 반환
+            return reviews
 
 
 # 같은 파일 내에 작성하지 않고 따로 파일을 만들어서 import해도 상관없음. 어드민 클래스 내에서 사용하기만 하면 됨
