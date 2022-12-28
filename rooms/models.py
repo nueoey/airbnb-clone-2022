@@ -69,11 +69,12 @@ class Room(CommonModel):
 
     def total_amenities(self):
         return self.amenities.count()
+        # amenities는 ManyToMany 필드이므로 QuerySet과 비슷. 따라서 .filter, .all, .exclude, .count 등 가지고 있음!
 
     def rating(self):
         count = self.reviews.count()  # related_name을 사용하지 않았다면 review_set이라고 써야함
         if count == 0:
-            return "No Reviews"
+            return 0
         else:
             total_rating = 0
             for review in self.reviews.all().values(

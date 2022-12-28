@@ -15,6 +15,8 @@ from rest_framework.status import HTTP_204_NO_CONTENT
 from .models import Room, Amenity
 from categories.models import Category
 from .serializers import RoomListSerializer, RoomDetailSerializer, AmenitySerializer
+from reviews.serializers import ReviewSerializer
+
 
 # 모든 view function은 request를 받음
 
@@ -70,7 +72,11 @@ class AmenityDetail(APIView):
 class Rooms(APIView):
     def get(self, request):
         all_rooms = Room.objects.all()
-        serializer = RoomListSerializer(all_rooms, many=True)
+        serializer = RoomListSerializer(
+            all_rooms,
+            many=True,
+            context={"request": request},
+        )
         return Response(serializer.data)
 
     def post(self, request):
@@ -124,7 +130,10 @@ class RoomDetail(APIView):
 
     def get(self, request, pk):
         room = self.get_object(pk)
-        serializer = RoomDetailSerializer(room)
+        serializer = RoomDetailSerializer(
+            room,
+            context={"request": request},
+        )
         return Response(serializer.data)
 
     def put(self, request, pk):
@@ -181,3 +190,40 @@ class RoomDetail(APIView):
             raise PermissionDenied
         room.delete()
         return Response(status=HTTP_204_NO_CONTENT)
+
+
+class RoomReviews(APIView):
+    def get_object(self, pk):
+        try:
+            return Room.objects.get(pk=pk)
+        except Room.DoesNotExist:
+            raise NotFound
+
+    def get(self, request, pk):
+        try:
+            page = request.query_params.get(
+                "page", 1
+            )  # 해당 페이지를 찾을 수 없을 때는 기본값으로 페이지 1을 요청한다는 뜻
+            page = int(page)
+        except ValueError:
+            page = 1
+        page_size = 3
+        start = (page - 1) * page_size
+        end = start + page_size
+        room = self.get_object(pk)
+        serializer = ReviewSerializer(
+            room.reviews.all()[start:end],  # list[a:b]이면 a는 포함, b는 포함 x
+            many=True,
+        )
+        return Response(serializer.data)
+
+
+class RoomAmenities(APIView):
+    def get_object(self, pk):
+        try:
+            return self.objects.all(pk=pk)
+        except Room.DoesNotExist:
+            return NotFound
+
+    def get(self, request, pk):
+        pass

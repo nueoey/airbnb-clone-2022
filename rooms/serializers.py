@@ -1,7 +1,9 @@
 from rest_framework.serializers import ModelSerializer
+from rest_framework import serializers
 from .models import Room, Amenity
 from users.serializers import TinyUserSerializer
 from categories.serializers import CategorySerializer
+from reviews.serializers import ReviewSerializer
 
 
 # ModelSerializer를 사용하기 때문에, id, created_at, updated_at은 이미 read-only인 property로 설정되어 있음
@@ -17,6 +19,17 @@ class AmenitySerializer(ModelSerializer):
 
 
 class RoomListSerializer(ModelSerializer):
+
+    rating = serializers.SerializerMethodField()
+    is_owner = serializers.SerializerMethodField()
+
+    def get_rating(self, room):
+        return room.rating()
+
+    def get_is_owner(self, room):
+        request = self.context["request"]
+        return room.owner == request.user
+
     class Meta:
         model = Room
         fields = (
@@ -25,6 +38,8 @@ class RoomListSerializer(ModelSerializer):
             "country",
             "city",
             "price",
+            "rating",
+            "is_owner",
         )
         # depth = 1  장고와 DRF가 "owner"의 ID를 보고 이 object를 serialize한 후, 그 데이터를 ID 대신에 넣어줄 것
         # depth = 1의 단점은 커스터마이즈 할 수 없다는 것. 따라서, 모든 항목들이 다 나옴
@@ -46,7 +61,20 @@ class RoomDetailSerializer(ModelSerializer):
     # read_only일 경우, serializer가 해당 필드를 validation해줄 수 없기 때문에, 직접 validation 과정을 만들어줘야 함
     amenities = AmenitySerializer(read_only=True, many=True)  #
     category = CategorySerializer(read_only=True)
+    rating = serializers.SerializerMethodField()
+    # SerializerMethodField는 rating의 값을 계산할 메서드를 만들 거라는 뜻
+    is_owner = serializers.SerializerMethodField()
 
     class Meta:
         model = Room
         fields = "__all__"
+
+    # 메서드의 이름은 반드시 속성의 이름 앞에 get_을 붙인 것이어야 함
+    # 두번째 argument는 현재 serializing하고 있는 오브젝트
+    def get_rating(self, room):
+        print(self.context)
+        return room.rating()
+
+    def get_is_owner(self, room):
+        request = self.context["request"]
+        return room.owner == request.user

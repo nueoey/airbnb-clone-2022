@@ -24,6 +24,7 @@ class RoomAdmin(admin.ModelAdmin):
         "price",
         "kind",
         "total_amenities",
+        # list_display나 list_filter에 이렇게 항목을 추가하면 장고는 해당 항목을 RoomAdmin 클래스 내부에서 찾고, 없으면 Room Model에서 찾는다
         "rating",
         "owner",
         "created_at",
