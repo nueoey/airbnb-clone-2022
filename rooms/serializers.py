@@ -4,6 +4,8 @@ from .models import Room, Amenity
 from users.serializers import TinyUserSerializer
 from categories.serializers import CategorySerializer
 from reviews.serializers import ReviewSerializer
+from medias.serializers import PhotoSerializer
+from wishlists.models import Wishlist
 
 
 # ModelSerializer를 사용하기 때문에, id, created_at, updated_at은 이미 read-only인 property로 설정되어 있음
@@ -22,6 +24,7 @@ class RoomListSerializer(ModelSerializer):
 
     rating = serializers.SerializerMethodField()
     is_owner = serializers.SerializerMethodField()
+    photos = PhotoSerializer(many=True, read_only=True)
 
     def get_rating(self, room):
         return room.rating()
@@ -40,6 +43,7 @@ class RoomListSerializer(ModelSerializer):
             "price",
             "rating",
             "is_owner",
+            "photos",
         )
         # depth = 1  장고와 DRF가 "owner"의 ID를 보고 이 object를 serialize한 후, 그 데이터를 ID 대신에 넣어줄 것
         # depth = 1의 단점은 커스터마이즈 할 수 없다는 것. 따라서, 모든 항목들이 다 나옴
@@ -64,6 +68,8 @@ class RoomDetailSerializer(ModelSerializer):
     rating = serializers.SerializerMethodField()
     # SerializerMethodField는 rating의 값을 계산할 메서드를 만들 거라는 뜻
     is_owner = serializers.SerializerMethodField()
+    is_liked = serializers.SerializerMethodField()
+    photos = PhotoSerializer(many=True, read_only=True)
 
     class Meta:
         model = Room
@@ -78,3 +84,12 @@ class RoomDetailSerializer(ModelSerializer):
     def get_is_owner(self, room):
         request = self.context["request"]
         return room.owner == request.user
+
+    def get_is_liked(self, room):
+        request = self.context["request"]
+        # request를 받아오는 이유는, 어떤 user가 이 방을 보고있는지 확인하기 위해서임
+        return Wishlist.objects.filter(
+            user=request.user,
+            rooms__id=room.pk,
+        ).exists()
+        # .get()을 쓰지 않은 이유는 한 유저가 여러 개의 wishlist를 가지고 있을 수 있기 때문

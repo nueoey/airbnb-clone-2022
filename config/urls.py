@@ -19,13 +19,20 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rooms import views
+from django.conf.urls.static import static
+from django.conf import settings
 
 urlpatterns = [
     # path함수의 첫번째 argument는 주소, 두번째 argument는 그때 실행될 함수
+    # 주소 뒤에는 반드시 /가 붙어야 함. 빼먹으면 오류 발생!
     path("admin/", admin.site.urls),
     path(
         "api/v1/rooms/", include("rooms.urls")
     ),  # /rooms/ (뒤에 뭐가 붙든 모두)에 접근한다면 rooms앱의 urls.py를 찾아보라는 뜻
     path("api/v1/categories/", include("categories.urls")),
     path("api/v1/experiences/", include("experiences.urls")),
-]  # 이렇게 api/버전/앱이름 형식으로 주소를 만들어주는 것이 좋음
+    path("api/v1/medias/", include("medias.urls")),
+    path("api/v1/wishlists/", include("wishlists.urls")),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# 이렇게 api/버전/앱이름 형식으로 주소를 만들어주는 것이 좋음
